@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>测试中...</title>
+
+    {% load static %}
+    <script src="{% static 'blog\jquery-3.2.1.min.js' %} "></script>
+    <link href="{% static 'blog\index.css' %}" rel="stylesheet">
+
+    <script type="text/javascript">
+        function get_port_value() {
+            var port = document.getElementById("port").value;
+            thr = parseInt(document.getElementById("thread").value);
+            strs = port.split("-");
+            s_port = parseInt(strs[0]);
+            e_port = parseInt(strs[1]);
+            diff = e_port-s_port;
+            check(s_port,diff);
+
+        }
+        function check(s_port,diff){
+            start_port = s_port;
+            if (diff > thr){
+                end_port = start_port+(thr-1);
+                scan(start_port,end_port,diff);
+            }else{
+                end_port = e_port;
+                scan(start_port,end_port,diff);
+            }
+        }
+        function scan(start_port,end_port,diff){
+            $.ajax({
+                url:"{% url "search" %}",
+                type:"POST",
+                data:{'url':$('#url').val(),'s_p':start_port,'e_p':end_port},
+                success:function(result){
+                        $("#scanner").append("<p></p>");
+                        $("#scanner").append(result);
+                        if(diff > thr) {
+                            diff -= thr;
+                            start_port += thr;
+                            check(start_port, diff);
+                        }
+                    }
+                });
+        }
+    </script>
+</head>
+<body>
+{#<form action="/search/" method="post">#}
+{#<form>#}
+{#    输入ip:<br><input type="text" id="url"/><br>#}
+{#    输入端口:<br><input type="text" id="port"/><br>#}
+{#    输入线程:<br><input type="text" id="thread" value="300">#}
+{#    {% csrf_token %}#}
+{#    <input type="button" value="提交" onclick="get_port_value()"/>#}
+{##}
+{#    <div id="scanner"><br>Ajax扫描结果显示:<br></div>#}
+{#</form>#}
+{#</form>#}
+<form id="login">
+    <h1>Scan</h1>
+    <fieldset id="inputs">
+        <!-- <input id="username" type="text" placeholder="Username" autofocus required>
+        <input id="password" type="password" placeholder="Password" required>
+        <input id="port" type="text" placeholder="Port" required>  -->
+        <input type="text" id="url" placeholder="Ip地址" autofocus required><br>
+        <input type="text" id="port" placeholder="Port端口" required><br>
+        <input type="text" id="thread" placeholder="Thread线程" required>
+        {% csrf_token %}
+    </fieldset>
+    <fieldset id="actions">
+        <input type="button" id="submit" value="Scan" onclick="get_port_value()">
+    </fieldset>
+    <fieldset id="views">
+        <br>
+        <div id="scanner"><br>Ajax扫描结果显示:<br></div>
+    </fieldset>
+</form>
+
+</body>
+</html>

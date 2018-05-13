@@ -1,0 +1,6 @@
+{% for key,value in dict.items %}
+    {% if 'open' in value %}
+        <tr>{{ key }},{{ value }}</tr><br>
+    {% endif %}
+{% endfor %}
+<br>扫描结束
